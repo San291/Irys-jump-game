@@ -4,16 +4,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IRYS Jump Game</title>
+  <title>IRYS Jump Game - 3D Look</title>
   <style>
     body { margin: 0; overflow: hidden; background-color: #FEF3C7; }
     canvas { display: block; margin: 0 auto; }
     #score { position: absolute; top: 20px; left: 20px; font-size: 24px; font-weight: bold; }
+    #retryButton { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 10px 20px; font-size: 18px; }
   </style>
 </head>
 <body>
   <div id="score">Score: 0</div>
   <canvas id="gameCanvas" width="480" height="640"></canvas>
+  <button id="retryButton">Retry</button>
 
   <script>
     const canvas = document.getElementById('gameCanvas');
@@ -26,21 +28,22 @@
     let obstacles = [];
     let frameCount = 0;
     let score = 0;
+    let gameLoopId;
 
-    // Load IRYS sprite
+    // Load IRYS 3D-style sprite
     const irysImage = new Image();
-    irysImage.src = 'irys.png'; // Replace with your uploaded sprite image name
+    irysImage.src = 'irys-3d.png'; // Replace with your 3D-style sprite image
 
     // Load background image
     const backgroundImage = new Image();
-    backgroundImage.src = 'background.png'; // Replace with your uploaded background image name
+    backgroundImage.src = 'background.png'; // Replace with your uploaded background image
 
     function jump() {
       irysVelocity = jumpPower;
     }
 
     function drawIRYS() {
-      ctx.drawImage(irysImage, 80, irysY - 20, 50, 50);
+      ctx.drawImage(irysImage, 80, irysY - 20, 80, 80); // Larger size for 3D effect
     }
 
     function drawObstacles() {
@@ -68,10 +71,14 @@
     function detectCollision() {
       for (let obs of obstacles) {
         if (100 + 20 > obs.x && 100 - 20 < obs.x + obs.width && irysY + 20 > obs.y && irysY - 20 < obs.y + obs.height) {
-          alert('Game Over! Final Score: ' + score);
-          window.location.reload();
+          gameOver();
         }
       }
+    }
+
+    function gameOver() {
+      document.getElementById('retryButton').style.display = 'block';
+      cancelAnimationFrame(gameLoopId);
     }
 
     function gameLoop() {
@@ -99,11 +106,15 @@
         document.getElementById('score').innerText = 'Score: ' + score;
       }
 
-      requestAnimationFrame(gameLoop);
+      gameLoopId = requestAnimationFrame(gameLoop);
     }
 
     document.addEventListener('touchstart', jump);
     document.addEventListener('keydown', event => { if (event.code === 'Space') jump(); });
+
+    document.getElementById('retryButton').addEventListener('click', function() {
+      location.reload();
+    });
 
     gameLoop();
   </script>

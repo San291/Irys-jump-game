@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IRYS Fast Jump Game</title>
+  <title>IRYS 3D Style Jump Game</title>
   <style>
     body { margin: 0; overflow: hidden; background-color: #E0F2FE; }
     canvas { display: block; margin: 0 auto; background-color: #FDE68A; }
@@ -24,21 +24,28 @@
     let irysX = 80;
     let irysY = 500;
     let irysVelocity = 0;
-    let gravity = 0.8;
+    let gravity = 0.6;
     let jumpPower = -14;
     let groundLevel = 500;
     let obstacles = [];
     let frameCount = 0;
     let score = 0;
     let gameRunning = true;
+    let obstacleSpeed = 4;
 
     // Load IRYS 3D-style sprite
     const irysImage = new Image();
     irysImage.src = 'irys-3d.png';
 
-    // Load background image
-    const backgroundImage = new Image();
-    backgroundImage.src = 'background.png';
+    // Load background layers
+    const backgroundFar = new Image();
+    backgroundFar.src = 'background-far.png';
+
+    const backgroundMid = new Image();
+    backgroundMid.src = 'background-mid.png';
+
+    let bgFarX = 0;
+    let bgMidX = 0;
 
     function jump() {
       if (gameRunning && irysY >= groundLevel) {
@@ -46,12 +53,26 @@
       }
     }
 
+    function drawBackground() {
+      bgFarX -= 1;
+      bgMidX -= 2;
+
+      if (bgFarX <= -canvas.width) bgFarX = 0;
+      if (bgMidX <= -canvas.width) bgMidX = 0;
+
+      ctx.drawImage(backgroundFar, bgFarX, 0, canvas.width, canvas.height);
+      ctx.drawImage(backgroundFar, bgFarX + canvas.width, 0, canvas.width, canvas.height);
+
+      ctx.drawImage(backgroundMid, bgMidX, 0, canvas.width, canvas.height);
+      ctx.drawImage(backgroundMid, bgMidX + canvas.width, 0, canvas.width, canvas.height);
+    }
+
     function drawIRYS() {
       ctx.drawImage(irysImage, irysX, irysY - 80, 80, 80);
     }
 
     function drawObstacles() {
-      ctx.fillStyle = '#EF4444';
+      ctx.fillStyle = '#A855F7';
       for (let obs of obstacles) {
         ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
       }
@@ -64,7 +85,7 @@
       }
 
       for (let obs of obstacles) {
-        obs.x -= 6; // Faster speed to match the video style
+        obs.x -= obstacleSpeed;
       }
 
       obstacles = obstacles.filter(obs => obs.x + obs.width > 0);
@@ -85,7 +106,8 @@
 
     function gameLoop() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+      drawBackground();
 
       if (irysY < groundLevel) {
         irysVelocity += gravity;
@@ -105,6 +127,10 @@
       if (frameCount % 60 === 0 && gameRunning) {
         score++;
         document.getElementById('score').innerText = 'Score: ' + score;
+
+        if (score % 20 === 0) {
+          obstacleSpeed += 0.5; // Gradually increase speed
+        }
       }
 
       if (gameRunning) {

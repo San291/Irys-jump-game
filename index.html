@@ -1,12 +1,13 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IRYS Jump Game - Final</title>
+  <title>IRYS Land Jump Game</title>
   <style>
-    body { margin: 0; overflow: hidden; background-color: #FEF3C7; }
-    canvas { display: block; margin: 0 auto; }
+    body { margin: 0; overflow: hidden; background-color: #E0F2FE; }
+    canvas { display: block; margin: 0 auto; background-color: #FDE68A; }
     #score { position: absolute; top: 20px; left: 20px; font-size: 24px; font-weight: bold; }
     #retryButton { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 10px 20px; font-size: 18px; }
   </style>
@@ -20,10 +21,12 @@
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    let irysY = canvas.height / 2;
+    let irysX = 80;
+    let irysY = 500;
     let irysVelocity = 0;
-    let gravity = 0.5;
-    let jumpPower = -10;
+    let gravity = 0.6;
+    let jumpPower = -12;
+    let groundLevel = 500;
     let obstacles = [];
     let frameCount = 0;
     let score = 0;
@@ -31,18 +34,20 @@
 
     // Load IRYS 3D-style sprite
     const irysImage = new Image();
-    irysImage.src = 'irys-3d.png'; // Make sure this image is uploaded to your GitHub root
+    irysImage.src = 'irys-3d.png'; // Your character sprite
 
     // Load background image
     const backgroundImage = new Image();
-    backgroundImage.src = 'background.png'; // Make sure this image is uploaded to your GitHub root
+    backgroundImage.src = 'background.png'; // Your background image
 
     function jump() {
-      if (gameRunning) irysVelocity = jumpPower;
+      if (gameRunning && irysY >= groundLevel) {
+        irysVelocity = jumpPower;
+      }
     }
 
     function drawIRYS() {
-      ctx.drawImage(irysImage, 80, irysY - 20, 80, 80);
+      ctx.drawImage(irysImage, irysX, irysY - 80, 80, 80);
     }
 
     function drawObstacles() {
@@ -53,15 +58,13 @@
     }
 
     function updateObstacles() {
-      if (frameCount % 90 === 0) {
-        let gap = 150;
-        let topHeight = Math.random() * (canvas.height - gap - 100) + 50;
-        obstacles.push({ x: canvas.width, y: 0, width: 40, height: topHeight });
-        obstacles.push({ x: canvas.width, y: topHeight + gap, width: 40, height: canvas.height });
+      if (frameCount % 120 === 0) {
+        let obstacleHeight = 40;
+        obstacles.push({ x: canvas.width, y: groundLevel + 40, width: 40, height: obstacleHeight });
       }
 
       for (let obs of obstacles) {
-        obs.x -= 3;
+        obs.x -= 5;
       }
 
       obstacles = obstacles.filter(obs => obs.x + obs.width > 0);
@@ -69,7 +72,7 @@
 
     function detectCollision() {
       for (let obs of obstacles) {
-        if (100 + 20 > obs.x && 100 - 20 < obs.x + obs.width && irysY + 20 > obs.y && irysY - 20 < obs.y + obs.height) {
+        if (irysX + 80 > obs.x && irysX < obs.x + obs.width && irysY + 20 > obs.y) {
           gameOver();
         }
       }
@@ -82,17 +85,16 @@
 
     function gameLoop() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Draw background
       ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
-      irysVelocity += gravity;
-      irysY += irysVelocity;
-
-      if (irysY + 20 > canvas.height) {
-        irysY = canvas.height - 20;
+      if (irysY < groundLevel) {
+        irysVelocity += gravity;
+      } else {
+        irysY = groundLevel;
         irysVelocity = 0;
       }
+
+      irysY += irysVelocity;
 
       drawIRYS();
       updateObstacles();

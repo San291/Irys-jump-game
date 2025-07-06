@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IRYS Land Jump Game</title>
+  <title>IRYS Fast Jump Game</title>
   <style>
     body { margin: 0; overflow: hidden; background-color: #E0F2FE; }
     canvas { display: block; margin: 0 auto; background-color: #FDE68A; }
@@ -24,8 +24,8 @@
     let irysX = 80;
     let irysY = 500;
     let irysVelocity = 0;
-    let gravity = 0.6;
-    let jumpPower = -12;
+    let gravity = 0.8;
+    let jumpPower = -14;
     let groundLevel = 500;
     let obstacles = [];
     let frameCount = 0;
@@ -34,11 +34,11 @@
 
     // Load IRYS 3D-style sprite
     const irysImage = new Image();
-    irysImage.src = 'irys-3d.png'; // Your character sprite
+    irysImage.src = 'irys-3d.png';
 
     // Load background image
     const backgroundImage = new Image();
-    backgroundImage.src = 'background.png'; // Your background image
+    backgroundImage.src = 'background.png';
 
     function jump() {
       if (gameRunning && irysY >= groundLevel) {
@@ -51,20 +51,20 @@
     }
 
     function drawObstacles() {
-      ctx.fillStyle = '#4B5563';
+      ctx.fillStyle = '#EF4444';
       for (let obs of obstacles) {
         ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
       }
     }
 
     function updateObstacles() {
-      if (frameCount % 120 === 0) {
-        let obstacleHeight = 40;
-        obstacles.push({ x: canvas.width, y: groundLevel + 40, width: 40, height: obstacleHeight });
+      if (frameCount % 90 === 0) {
+        let obstacleHeight = 50;
+        obstacles.push({ x: canvas.width, y: groundLevel + 40, width: 30, height: obstacleHeight });
       }
 
       for (let obs of obstacles) {
-        obs.x -= 5;
+        obs.x -= 6; // Faster speed to match the video style
       }
 
       obstacles = obstacles.filter(obs => obs.x + obs.width > 0);

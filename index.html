@@ -18,7 +18,7 @@
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-    
+
     let irysY = canvas.height / 2;
     let irysVelocity = 0;
     let gravity = 0.5;
@@ -27,15 +27,20 @@
     let frameCount = 0;
     let score = 0;
 
+    // Load IRYS sprite
+    const irysImage = new Image();
+    irysImage.src = 'irys.png'; // Replace with your uploaded sprite image name
+
+    // Load background image
+    const backgroundImage = new Image();
+    backgroundImage.src = 'background.png'; // Replace with your uploaded background image name
+
     function jump() {
       irysVelocity = jumpPower;
     }
 
     function drawIRYS() {
-      ctx.fillStyle = '#FACC15';
-      ctx.beginPath();
-      ctx.arc(100, irysY, 20, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.drawImage(irysImage, 80, irysY - 20, 50, 50);
     }
 
     function drawObstacles() {
@@ -71,6 +76,9 @@
 
     function gameLoop() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw background
+      ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
       irysVelocity += gravity;
       irysY += irysVelocity;
